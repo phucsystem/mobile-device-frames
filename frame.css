@@ -42,6 +42,86 @@
   position: relative;
 }
 
+/* --- Iframe: embedded URL content --- */
+.df-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+}
+
+.df-iframe-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F5F5F5;
+  z-index: 10;
+  transition: opacity 0.3s ease;
+}
+
+.df-iframe-loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.df-iframe-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #E0E0E0;
+  border-top-color: #1976D2;
+  border-radius: 50%;
+  animation: df-spin 0.8s linear infinite;
+}
+
+@keyframes df-spin {
+  to { transform: rotate(360deg); }
+}
+
+.df-iframe-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #F5F5F5;
+  z-index: 10;
+  padding: 24px;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+}
+
+.df-iframe-error-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #FFEBEE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: #D32F2F;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.df-iframe-error-text {
+  font-size: 13px;
+  color: #757575;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.df-iframe-error-url {
+  font-size: 11px;
+  color: #9E9E9E;
+  margin-top: 8px;
+  word-break: break-all;
+  max-width: 280px;
+}
+
 /* --- Device dimensions --- */
 .df-frame[data-device="iphone-16-pro-max"] { width: 430px; height: 932px; border-radius: 55px; }
 .df-frame[data-device="iphone-16-pro"]     { width: 393px; height: 852px; border-radius: 55px; }

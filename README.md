@@ -2,6 +2,8 @@
 
 Wrap HTML prototypes in realistic device frames with navigation, responsive behavior, and safe areas. Uses Tailwind CSS (CDN). No build step required.
 
+**[Live Demo](https://phucsystem.github.io/mobile-device-frames/)**
+
 ## Features
 
 - 8 device frames (iPhone, Galaxy, Pixel) with accurate dimensions
@@ -10,6 +12,7 @@ Wrap HTML prototypes in realistic device frames with navigation, responsive beha
 - Responsive: fullscreen on mobile, framed on desktop
 - Safe area CSS utilities
 - Staggered entrance animations
+- Load any URL in an iframe inside the device frame
 - Zero dependencies (Tailwind CDN optional)
 - No build step — just HTML, CSS, JS
 
@@ -67,6 +70,33 @@ window.DeviceFrameConfig = {
 - **Tablet (501-768px)**: Collapsible sidebar with hamburger toggle
 - **Mobile (<500px)**: FAB button + bottom sheet overlay
 
+## URL / Iframe Mode
+
+Load any web URL inside the device frame:
+
+```html
+<!-- Via attribute -->
+<div data-device="iphone-16-pro" data-url="https://example.com"></div>
+
+<!-- Via config -->
+<script>
+window.DeviceFrameConfig = {
+  device: 'galaxy-s24-ultra',
+  url: 'https://example.com',
+};
+</script>
+<div data-device="auto"></div>
+```
+
+Switch URLs at runtime:
+
+```js
+window.deviceFrame.loadUrl('https://example.com');
+window.deviceFrame.loadUrl('');  // clear iframe, restore content
+```
+
+> **Note:** Some sites block iframe embedding via `X-Frame-Options` or `Content-Security-Policy`. An error message is shown when this happens.
+
 ## Safe Area Utilities
 
 CSS classes for `env(safe-area-inset-*)`:
@@ -109,12 +139,19 @@ window.deviceFrame
 // Switch device at runtime
 window.deviceFrame.switchDevice('galaxy-s24-ultra');
 
+// Load a URL in iframe
+window.deviceFrame.loadUrl('https://example.com');
+
+// Clear iframe
+window.deviceFrame.loadUrl('');
+
 // Get all device specs
 const devices = DeviceFrame.getDevices();
 
 // Manual initialization
 const frame = new DeviceFrame({
   device: 'pixel-9-pro',
+  url: 'https://example.com',  // optional: load URL in iframe
   title: 'My Proto',
   screens: [...]
 });

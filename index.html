@@ -229,7 +229,7 @@
     <p>Wrap HTML prototypes in realistic device frames with navigation, responsive behavior, and safe areas. No build step required.</p>
   </div>
 
-  <!-- Device Picker -->
+  <!-- Device Picker + URL Input -->
   <div class="demo-controls">
     <label for="device-picker">Device:</label>
     <select id="device-picker">
@@ -242,6 +242,13 @@
       <option value="pixel-9-pro">Pixel 9 Pro</option>
       <option value="pixel-9">Pixel 9</option>
     </select>
+  </div>
+
+  <div class="demo-controls">
+    <label for="url-input">URL:</label>
+    <input type="url" id="url-input" placeholder="https://example.com" style="padding:8px 16px;border-radius:8px;border:1px solid #E0E0E0;background:#fff;font-size:14px;font-weight:500;color:#212121;outline:none;width:320px;" />
+    <button id="url-load-btn" style="padding:8px 20px;border-radius:8px;border:none;background:#1976D2;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">Load</button>
+    <button id="url-clear-btn" style="padding:8px 16px;border-radius:8px;border:1px solid #E0E0E0;background:#fff;color:#424242;font-size:14px;font-weight:500;cursor:pointer;">Clear</button>
   </div>
 
   <!-- Device Info -->
@@ -336,6 +343,34 @@
         window.deviceFrame.switchDevice(deviceId);
       }
       updateDeviceInfo(deviceId);
+    });
+
+    /* --- URL input --- */
+    const urlInput = document.getElementById('url-input');
+    const urlLoadBtn = document.getElementById('url-load-btn');
+    const urlClearBtn = document.getElementById('url-clear-btn');
+
+    function loadUrlInFrame() {
+      const url = urlInput.value.trim();
+      if (!url) return;
+      const normalizedUrl = url.match(/^https?:\/\//) ? url : 'https://' + url;
+      urlInput.value = normalizedUrl;
+      if (window.deviceFrame) {
+        window.deviceFrame.loadUrl(normalizedUrl);
+      }
+    }
+
+    urlLoadBtn.addEventListener('click', loadUrlInFrame);
+    urlInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') loadUrlInFrame();
+    });
+
+    urlClearBtn.addEventListener('click', function () {
+      urlInput.value = '';
+      if (window.deviceFrame) {
+        window.deviceFrame.loadUrl('');
+        window.location.reload();
+      }
     });
 
     /* --- Build all-devices grid --- */

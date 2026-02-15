@@ -23,8 +23,10 @@ class DeviceFrame {
     this.device = this.config.device || DEFAULT_DEVICE;
     this.title = this.config.title || '';
     this.screens = this.config.screens || [];
+    this.url = this.config.url || '';
     this.accentColor = this.config.accentColor || '#1976D2';
     this.targetEl = null;
+    this.iframeEl = null;
     this.navOpen = true;
   }
 
@@ -35,6 +37,11 @@ class DeviceFrame {
     const attrDevice = this.targetEl.getAttribute('data-device');
     if (attrDevice && attrDevice !== 'auto' && DEVICES[attrDevice]) {
       this.device = attrDevice;
+    }
+
+    const attrUrl = this.targetEl.getAttribute('data-url');
+    if (attrUrl) {
+      this.url = attrUrl;
     }
 
     this.wrapContent();
@@ -61,8 +68,12 @@ class DeviceFrame {
     const screen = document.createElement('div');
     screen.className = 'df-screen';
 
-    while (this.targetEl.firstChild) {
-      screen.appendChild(this.targetEl.firstChild);
+    if (this.url) {
+      this._renderIframe(screen, this.url);
+    } else {
+      while (this.targetEl.firstChild) {
+        screen.appendChild(this.targetEl.firstChild);
+      }
     }
 
     frame.appendChild(screen);
@@ -73,6 +84,66 @@ class DeviceFrame {
     this.stageEl = stage;
     this.frameEl = frame;
     this.screenEl = screen;
+  }
+
+  _renderIframe(container, url) {
+    const loading = document.createElement('div');
+    loading.className = 'df-iframe-loading';
+    loading.innerHTML = '<div class="df-iframe-spinner"></div>';
+    container.appendChild(loading);
+
+    const iframe = document.createElement('iframe');
+    iframe.className = 'df-iframe';
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+    iframe.setAttribute('loading', 'lazy');
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.src = url;
+
+    iframe.addEventListener('load', () => {
+      loading.classList.add('hidden');
+      setTimeout(() => loading.remove(), 300);
+    });
+
+    iframe.addEventListener('error', () => {
+      loading.remove();
+      this._renderIframeError(container, url);
+    });
+
+    container.appendChild(iframe);
+    this.iframeEl = iframe;
+  }
+
+  _renderIframeError(container, url) {
+    const existing = container.querySelector('.df-iframe-error');
+    if (existing) existing.remove();
+
+    const errorEl = document.createElement('div');
+    errorEl.className = 'df-iframe-error';
+    errorEl.innerHTML = `
+      <div class="df-iframe-error-icon">!</div>
+      <div class="df-iframe-error-text">Unable to load this URL. The site may block iframe embedding (X-Frame-Options).</div>
+      <div class="df-iframe-error-url">${url}</div>
+    `;
+    container.appendChild(errorEl);
+  }
+
+  loadUrl(url) {
+    if (!this.screenEl) return;
+    this.url = url;
+
+    const oldIframe = this.screenEl.querySelector('.df-iframe');
+    const oldLoading = this.screenEl.querySelector('.df-iframe-loading');
+    const oldError = this.screenEl.querySelector('.df-iframe-error');
+    if (oldIframe) oldIframe.remove();
+    if (oldLoading) oldLoading.remove();
+    if (oldError) oldError.remove();
+
+    if (!url) {
+      this.iframeEl = null;
+      return;
+    }
+
+    this._renderIframe(this.screenEl, url);
   }
 
   renderNotch() {
