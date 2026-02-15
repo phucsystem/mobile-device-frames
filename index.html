@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>mobile-device-frames — Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="frame.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+      background: #E8ECF0;
+      color: #212121;
+    }
+
+    .demo-header {
+      text-align: center;
+      padding: 48px 24px 32px;
+    }
+
+    .demo-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .demo-header p {
+      font-size: 16px;
+      color: #757575;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .demo-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 24px 32px;
+      flex-wrap: wrap;
+    }
+
+    .demo-controls label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #424242;
+    }
+
+    .demo-controls select {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid #E0E0E0;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      color: #212121;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .demo-controls select:focus {
+      border-color: #1976D2;
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+    }
+
+    .demo-device-info {
+      text-align: center;
+      padding: 0 24px 24px;
+      font-size: 13px;
+      color: #757575;
+    }
+
+    .demo-device-info span {
+      display: inline-block;
+      background: #fff;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin: 0 4px;
+      font-weight: 500;
+      color: #424242;
+    }
+
+    /* Override stage for demo — no min-height */
+    .df-stage {
+      min-height: auto;
+      padding: 0 24px 48px;
+    }
+
+    /* Sample app content */
+    .sample-app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #fff;
+    }
+
+    .sample-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 52px 20px 12px;
+      background: #fff;
+    }
+
+    .sample-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .sample-header .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .sample-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 20px 24px;
+    }
+
+    .sample-card {
+      background: #F5F5F5;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .sample-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .sample-card-text {
+      font-size: 13px;
+      color: #757575;
+      line-height: 1.5;
+    }
+
+    .sample-card-img {
+      height: 120px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .sample-bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 12px 0 max(12px, env(safe-area-inset-bottom));
+      border-top: 1px solid #EEEEEE;
+      background: #fff;
+    }
+
+    .sample-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      font-size: 10px;
+      color: #9E9E9E;
+    }
+
+    .sample-tab.active {
+      color: #1976D2;
+    }
+
+    .sample-tab svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Grid demo */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 32px;
+      padding: 0 24px 48px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .demo-grid .df-stage {
+      padding: 0;
+    }
+
+    .demo-grid-item {
+      text-align: center;
+    }
+
+    .demo-grid-item-label {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #424242;
+    }
+
+    .demo-grid-item-specs {
+      font-size: 11px;
+      color: #9E9E9E;
+      margin-top: 4px;
+    }
+
+    .demo-section-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      padding: 48px 24px 24px;
+      color: #212121;
+    }
+
+    .demo-section-subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #757575;
+      margin-top: -16px;
+      margin-bottom: 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="demo-header">
+    <h1>mobile-device-frames</h1>
+    <p>Wrap HTML prototypes in realistic device frames with navigation, responsive behavior, and safe areas. No build step required.</p>
+  </div>
+
+  <!-- Device Picker -->
+  <div class="demo-controls">
+    <label for="device-picker">Device:</label>
+    <select id="device-picker">
+      <option value="iphone-16-pro-max">iPhone 16 Pro Max</option>
+      <option value="iphone-16-pro" selected>iPhone 16 Pro</option>
+      <option value="iphone-16">iPhone 16</option>
+      <option value="iphone-se">iPhone SE 3rd</option>
+      <option value="galaxy-s24-ultra">Galaxy S24 Ultra</option>
+      <option value="galaxy-s24">Galaxy S24</option>
+      <option value="pixel-9-pro">Pixel 9 Pro</option>
+      <option value="pixel-9">Pixel 9</option>
+    </select>
+  </div>
+
+  <!-- Device Info -->
+  <div class="demo-device-info" id="device-info">
+    <span id="info-width">393px</span> &times;
+    <span id="info-height">852px</span>
+    <span id="info-radius">55px radius</span>
+    <span id="info-notch">Dynamic Island</span>
+  </div>
+
+  <!-- Interactive Frame -->
+  <div data-device="iphone-16-pro">
+    <div class="sample-app">
+      <div class="sample-header">
+        <h2>Explore</h2>
+        <div class="avatar"></div>
+      </div>
+      <div class="sample-content">
+        <div class="sample-card" data-animate>
+          <div class="sample-card-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+          <div class="sample-card-title">Getting Started</div>
+          <div class="sample-card-text">Add frame.css and frame.js to your project, wrap content in a data-device div, and you're done.</div>
+        </div>
+        <div class="sample-card" data-animate>
+          <div class="sample-card-img" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+          <div class="sample-card-title">8 Device Frames</div>
+          <div class="sample-card-text">iPhone 16 Pro Max, iPhone 16 Pro, iPhone 16, iPhone SE, Galaxy S24 Ultra, Galaxy S24, Pixel 9 Pro, Pixel 9.</div>
+        </div>
+        <div class="sample-card" data-animate>
+          <div class="sample-card-img" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+          <div class="sample-card-title">Responsive</div>
+          <div class="sample-card-text">On mobile screens (&lt;500px), the frame goes fullscreen with a FAB navigation sheet. Desktop shows a sidebar.</div>
+        </div>
+        <div class="sample-card" data-animate>
+          <div class="sample-card-img" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+          <div class="sample-card-title">Animations</div>
+          <div class="sample-card-text">Add data-animate to elements for staggered fade-in-up animations on page load.</div>
+        </div>
+      </div>
+      <div class="sample-bottom-bar">
+        <div class="sample-tab active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          Home
+        </div>
+        <div class="sample-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search
+        </div>
+        <div class="sample-tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Devices Grid -->
+  <div class="demo-section-title">All Devices</div>
+  <p class="demo-section-subtitle">Each device rendered at actual dimensions with correct notch type</p>
+
+  <div class="demo-grid" id="all-devices-grid"></div>
+
+  <script src="frame.js"></script>
+  <script>
+    /* --- Device picker --- */
+    const picker = document.getElementById('device-picker');
+    const infoWidth = document.getElementById('info-width');
+    const infoHeight = document.getElementById('info-height');
+    const infoRadius = document.getElementById('info-radius');
+    const infoNotch = document.getElementById('info-notch');
+
+    const notchLabels = {
+      'dynamic-island': 'Dynamic Island',
+      'notch': 'Notch',
+      'punch-hole': 'Punch Hole',
+      'none': 'None',
+    };
+
+    function updateDeviceInfo(deviceId) {
+      const devices = DeviceFrame.getDevices();
+      const spec = devices[deviceId];
+      if (!spec) return;
+      infoWidth.textContent = spec.width + 'px';
+      infoHeight.textContent = spec.height + 'px';
+      infoRadius.textContent = spec.radius + 'px radius';
+      infoNotch.textContent = notchLabels[spec.notch] || spec.notch;
+    }
+
+    picker.addEventListener('change', function () {
+      const deviceId = this.value;
+      if (window.deviceFrame) {
+        window.deviceFrame.switchDevice(deviceId);
+      }
+      updateDeviceInfo(deviceId);
+    });
+
+    /* --- Build all-devices grid --- */
+    const grid = document.getElementById('all-devices-grid');
+    const devices = DeviceFrame.getDevices();
+
+    const deviceNames = {
+      'iphone-16-pro-max': 'iPhone 16 Pro Max',
+      'iphone-16-pro': 'iPhone 16 Pro',
+      'iphone-16': 'iPhone 16',
+      'iphone-se': 'iPhone SE 3rd',
+      'galaxy-s24-ultra': 'Galaxy S24 Ultra',
+      'galaxy-s24': 'Galaxy S24',
+      'pixel-9-pro': 'Pixel 9 Pro',
+      'pixel-9': 'Pixel 9',
+    };
+
+    const gradients = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+      'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)',
+    ];
+
+    Object.entries(devices).forEach(([deviceId, spec], deviceIndex) => {
+      const item = document.createElement('div');
+      item.className = 'demo-grid-item';
+
+      const frame = document.createElement('div');
+      frame.className = 'df-frame';
+      frame.setAttribute('data-device', deviceId);
+      frame.style.margin = '0 auto';
+
+      const screen = document.createElement('div');
+      screen.className = 'df-screen';
+      screen.style.background = gradients[deviceIndex % gradients.length];
+      screen.style.alignItems = 'center';
+      screen.style.justifyContent = 'center';
+      screen.style.color = '#fff';
+      screen.style.fontSize = '18px';
+      screen.style.fontWeight = '600';
+      screen.style.textShadow = '0 1px 4px rgba(0,0,0,0.2)';
+      screen.textContent = deviceNames[deviceId] || deviceId;
+
+      frame.appendChild(screen);
+
+      if (spec.notch !== 'none') {
+        const notch = document.createElement('div');
+        notch.className = `df-notch--${spec.notch}`;
+        frame.appendChild(notch);
+      }
+
+      if (spec.home) {
+        const indicator = document.createElement('div');
+        indicator.className = 'df-home-indicator';
+        frame.appendChild(indicator);
+      }
+
+      item.appendChild(frame);
+
+      const label = document.createElement('div');
+      label.className = 'demo-grid-item-label';
+      label.textContent = deviceNames[deviceId];
+      item.appendChild(label);
+
+      const specs = document.createElement('div');
+      specs.className = 'demo-grid-item-specs';
+      specs.textContent = `${spec.width}×${spec.height} · ${spec.radius}px radius · ${notchLabels[spec.notch]}`;
+      item.appendChild(specs);
+
+      grid.appendChild(item);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+/* ==========================================================================
+   mobile-device-frames — Device frames, navigation, safe areas, animations
+   v1.0.0 | MIT License | github.com/phucsystem/mobile-device-frames
+   ========================================================================== */
+
+/* --- Reset (scoped to frame elements) --- */
+.df-stage, .df-stage *, .df-nav, .df-nav * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Stage: centering wrapper --- */
+.df-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: #E8ECF0;
+}
+
+/* --- Frame: device shell --- */
+.df-frame {
+  position: relative;
+  overflow: hidden;
+  background: #FFFFFF;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.04),
+    0 20px 60px rgba(0,0,0,0.15),
+    0 8px 20px rgba(0,0,0,0.08);
+  flex-shrink: 0;
+}
+
+/* --- Screen: inner content area --- */
+.df-screen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* --- Device dimensions --- */
+.df-frame[data-device="iphone-16-pro-max"] { width: 430px; height: 932px; border-radius: 55px; }
+.df-frame[data-device="iphone-16-pro"]     { width: 393px; height: 852px; border-radius: 55px; }
+.df-frame[data-device="iphone-16"]         { width: 390px; height: 844px; border-radius: 47px; }
+.df-frame[data-device="iphone-se"]         { width: 375px; height: 667px; border-radius: 0; }
+.df-frame[data-device="galaxy-s24-ultra"]  { width: 412px; height: 915px; border-radius: 48px; }
+.df-frame[data-device="galaxy-s24"]        { width: 360px; height: 780px; border-radius: 42px; }
+.df-frame[data-device="pixel-9-pro"]       { width: 412px; height: 892px; border-radius: 44px; }
+.df-frame[data-device="pixel-9"]           { width: 393px; height: 851px; border-radius: 42px; }
+
+/* --- Notch: Dynamic Island (iPhone 16 Pro/Max) --- */
+.df-notch--dynamic-island {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 37px;
+  background: #000;
+  border-radius: 24px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* --- Notch: Classic (iPhone 16/15/14) --- */
+.df-notch--notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 34px;
+  background: #000;
+  border-radius: 0 0 24px 24px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* --- Notch: Punch Hole (Galaxy/Pixel) --- */
+.df-notch--punch-hole {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background: #000;
+  border-radius: 50%;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* --- Home indicator bar --- */
+.df-home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 3px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* --- Device button overlays (power/volume) --- */
+.df-btn-power {
+  position: absolute;
+  right: -3px;
+  top: 180px;
+  width: 3px;
+  height: 64px;
+  background: #b0b0b0;
+  border-radius: 0 2px 2px 0;
+  pointer-events: none;
+}
+
+.df-btn-volume-up {
+  position: absolute;
+  left: -3px;
+  top: 160px;
+  width: 3px;
+  height: 36px;
+  background: #b0b0b0;
+  border-radius: 2px 0 0 2px;
+  pointer-events: none;
+}
+
+.df-btn-volume-down {
+  position: absolute;
+  left: -3px;
+  top: 210px;
+  width: 3px;
+  height: 36px;
+  background: #b0b0b0;
+  border-radius: 2px 0 0 2px;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Navigation — Desktop Sidebar
+   ========================================================================== */
+
+.df-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 8px;
+  background: rgba(24, 24, 27, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.25s ease;
+}
+
+.df-nav-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 8px 10px 4px;
+}
+
+.df-nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 10px 4px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: 4px;
+}
+
+.df-nav-label:first-of-type {
+  border-top: none;
+  margin-top: 0;
+}
+
+.df-nav a {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  padding: 7px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  display: block;
+}
+
+.df-nav a:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+}
+
+.df-nav a.active {
+  color: #fff;
+  background: #1976D2;
+}
+
+/* Body offset when nav present */
+body.df-has-nav {
+  padding-left: 180px !important;
+}
+
+/* --- Sidebar toggle (tablet) --- */
+.df-nav-toggle {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 10000;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(24, 24, 27, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255,255,255,0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: background 0.15s ease;
+}
+
+.df-nav-toggle:hover {
+  background: rgba(24, 24, 27, 1);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Navigation — Mobile FAB + Bottom Sheet
+   ========================================================================== */
+
+.df-nav-fab {
+  display: none;
+}
+
+/* ==========================================================================
+   Safe Area Utilities
+   ========================================================================== */
+
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pl-safe { padding-left: env(safe-area-inset-left); }
+.pr-safe { padding-right: env(safe-area-inset-right); }
+.mt-safe { margin-top: env(safe-area-inset-top); }
+.mb-safe { margin-bottom: env(safe-area-inset-bottom); }
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes df-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes df-fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes df-scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes df-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+/* --- Mobile: fullscreen, no frame, show FAB --- */
+@media (max-width: 500px) {
+  .df-stage {
+    padding: 0;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    align-items: stretch;
+    justify-content: stretch;
+    background: #FFFFFF;
+  }
+
+  .df-frame {
+    width: 100% !important;
+    height: 100dvh !important;
+    height: -webkit-fill-available;
+    border-radius: 0 !important;
+    box-shadow: none;
+  }
+
+  .df-notch--dynamic-island,
+  .df-notch--notch,
+  .df-notch--punch-hole,
+  .df-home-indicator,
+  .df-btn-power,
+  .df-btn-volume-up,
+  .df-btn-volume-down {
+    display: none;
+  }
+
+  .df-nav {
+    display: none !important;
+  }
+
+  body.df-has-nav {
+    padding-left: 0 !important;
+  }
+
+  /* FAB visible on mobile */
+  .df-nav-fab {
+    display: flex;
+    position: fixed;
+    top: max(10px, env(safe-area-inset-top));
+    right: 10px;
+    z-index: 9998;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: rgba(255, 255, 255, 0.9);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+    transition: background 0.15s ease, transform 0.15s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+  }
+
+  .df-nav-fab:active {
+    transform: scale(0.92);
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Overlay container */
+  .df-nav-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .df-nav-overlay.open {
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  /* Backdrop */
+  .df-nav-overlay-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .df-nav-overlay.open .df-nav-overlay-backdrop {
+    opacity: 1;
+  }
+
+  /* Bottom sheet */
+  .df-nav-overlay-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 12px 20px max(24px, env(safe-area-inset-bottom));
+    max-height: 70dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+  }
+
+  .df-nav-overlay.open .df-nav-overlay-sheet {
+    transform: translateY(0);
+  }
+
+  /* Handle bar */
+  .df-nav-overlay-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: #d1d5db;
+    margin: 0 auto 12px;
+    cursor: pointer;
+  }
+
+  /* Title */
+  .df-nav-overlay-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #212121;
+    margin-bottom: 12px;
+  }
+
+  /* List */
+  .df-nav-overlay-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  /* Group label */
+  .df-nav-overlay-group {
+    font-size: 10px;
+    font-weight: 600;
+    color: #757575;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 8px 4px;
+  }
+
+  .df-nav-overlay-group:first-child {
+    padding-top: 0;
+  }
+
+  /* Screen link */
+  .df-nav-overlay-link {
+    display: block;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #212121;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .df-nav-overlay-link:hover,
+  .df-nav-overlay-link:active {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .df-nav-overlay-link.active {
+    background: rgba(25, 118, 210, 0.1);
+    color: #1976D2;
+    font-weight: 600;
+  }
+
+  /* Safe area insets for notched phones */
+  .df-screen > :first-child {
+    padding-top: max(0px, env(safe-area-inset-top));
+  }
+}
+
+/* --- Tablet: shrink nav --- */
+@media (min-width: 501px) and (max-width: 768px) {
+  .df-nav {
+    width: 140px;
+    padding: 10px 6px;
+  }
+
+  .df-nav a {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+
+  .df-nav-label {
+    font-size: 9px;
+  }
+
+  body.df-has-nav {
+    padding-left: 140px !important;
+  }
+
+  .df-nav-toggle {
+    display: flex;
+  }
+}
+
+/* --- Desktop: full sidebar --- */
+@media (min-width: 769px) {
+  .df-nav-toggle {
+    display: none;
+  }
+}
+
+/* --- Tablet toggle visibility --- */
+@media (max-width: 768px) and (min-width: 501px) {
+  .df-nav-toggle {
+    display: flex;
+  }
+}
