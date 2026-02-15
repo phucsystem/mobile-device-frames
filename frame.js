@@ -21,6 +21,7 @@ class DeviceFrame {
     const userConfig = window.DeviceFrameConfig || {};
     this.config = { ...userConfig, ...config };
     this.device = this.config.device || DEFAULT_DEVICE;
+    this.orientation = this.config.orientation || 'portrait';
     this.title = this.config.title || '';
     this.screens = this.config.screens || [];
     this.url = this.config.url || '';
@@ -45,6 +46,11 @@ class DeviceFrame {
       this.url = attrUrl;
     }
 
+    const attrOrientation = this.targetEl.getAttribute('data-orientation');
+    if (attrOrientation === 'landscape' || attrOrientation === 'portrait') {
+      this.orientation = attrOrientation;
+    }
+
     this.wrapContent();
     this.renderNotch();
     this.renderHomeIndicator();
@@ -65,6 +71,9 @@ class DeviceFrame {
     const frame = document.createElement('div');
     frame.className = 'df-frame';
     frame.setAttribute('data-device', this.device);
+    if (this.orientation === 'landscape') {
+      frame.setAttribute('data-orientation', 'landscape');
+    }
 
     const screen = document.createElement('div');
     screen.className = 'df-screen';
@@ -336,6 +345,22 @@ class DeviceFrame {
     if (mobileQuery.addEventListener) {
       mobileQuery.addEventListener('change', handleChange);
     }
+  }
+
+  setOrientation(orientation) {
+    if (orientation !== 'portrait' && orientation !== 'landscape') return;
+    if (!this.frameEl) return;
+    this.orientation = orientation;
+    if (orientation === 'landscape') {
+      this.frameEl.setAttribute('data-orientation', 'landscape');
+    } else {
+      this.frameEl.removeAttribute('data-orientation');
+    }
+  }
+
+  toggleOrientation() {
+    this.setOrientation(this.orientation === 'portrait' ? 'landscape' : 'portrait');
+    return this.orientation;
   }
 
   switchDevice(deviceId) {

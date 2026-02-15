@@ -132,7 +132,7 @@
   max-width: 280px;
 }
 
-/* --- Device dimensions --- */
+/* --- Device dimensions (portrait) --- */
 .df-frame[data-device="iphone-16-pro-max"] { width: 430px; height: 932px; border-radius: 55px; }
 .df-frame[data-device="iphone-16-pro"]     { width: 393px; height: 852px; border-radius: 55px; }
 .df-frame[data-device="iphone-16"]         { width: 390px; height: 844px; border-radius: 47px; }
@@ -142,7 +142,23 @@
 .df-frame[data-device="pixel-9-pro"]       { width: 412px; height: 892px; border-radius: 44px; }
 .df-frame[data-device="pixel-9"]           { width: 393px; height: 851px; border-radius: 42px; }
 
-/* --- Notch: Dynamic Island (iPhone 16 Pro/Max) --- */
+/* --- Device dimensions (landscape) — swap width/height --- */
+.df-frame[data-orientation="landscape"][data-device="iphone-16-pro-max"] { width: 932px; height: 430px; }
+.df-frame[data-orientation="landscape"][data-device="iphone-16-pro"]     { width: 852px; height: 393px; }
+.df-frame[data-orientation="landscape"][data-device="iphone-16"]         { width: 844px; height: 390px; }
+.df-frame[data-orientation="landscape"][data-device="iphone-se"]         { width: 667px; height: 375px; }
+.df-frame[data-orientation="landscape"][data-device="galaxy-s24-ultra"]  { width: 915px; height: 412px; }
+.df-frame[data-orientation="landscape"][data-device="galaxy-s24"]        { width: 780px; height: 360px; }
+.df-frame[data-orientation="landscape"][data-device="pixel-9-pro"]       { width: 892px; height: 412px; }
+.df-frame[data-orientation="landscape"][data-device="pixel-9"]           { width: 851px; height: 393px; }
+
+/* --- Orientation transition --- */
+.df-frame {
+  transition: width 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+              height 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* --- Notch: Dynamic Island (iPhone 16 Pro/Max) — portrait --- */
 .df-notch--dynamic-island {
   position: absolute;
   top: 12px;
@@ -154,9 +170,10 @@
   border-radius: 24px;
   z-index: 50;
   pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* --- Notch: Classic (iPhone 16/15/14) --- */
+/* --- Notch: Classic (iPhone 16/15/14) — portrait --- */
 .df-notch--notch {
   position: absolute;
   top: 0;
@@ -168,9 +185,10 @@
   border-radius: 0 0 24px 24px;
   z-index: 50;
   pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* --- Notch: Punch Hole (Galaxy/Pixel) --- */
+/* --- Notch: Punch Hole (Galaxy/Pixel) — portrait --- */
 .df-notch--punch-hole {
   position: absolute;
   top: 10px;
@@ -182,9 +200,10 @@
   border-radius: 50%;
   z-index: 50;
   pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* --- Home indicator bar --- */
+/* --- Home indicator bar — portrait --- */
 .df-home-indicator {
   position: absolute;
   bottom: 8px;
@@ -196,9 +215,10 @@
   border-radius: 3px;
   z-index: 50;
   pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* --- Device button overlays (power/volume) --- */
+/* --- Device button overlays (power/volume) — portrait --- */
 .df-btn-power {
   position: absolute;
   right: -3px;
@@ -208,6 +228,7 @@
   background: #b0b0b0;
   border-radius: 0 2px 2px 0;
   pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .df-btn-volume-up {
@@ -219,6 +240,7 @@
   background: #b0b0b0;
   border-radius: 2px 0 0 2px;
   pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .df-btn-volume-down {
@@ -230,7 +252,84 @@
   background: #b0b0b0;
   border-radius: 2px 0 0 2px;
   pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
+
+/* ==========================================================================
+   Landscape Orientation — Notch, Home Indicator, Buttons
+   ========================================================================== */
+
+/* Dynamic Island → left side in landscape */
+.df-frame[data-orientation="landscape"] .df-notch--dynamic-island {
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+/* Classic Notch → left side in landscape */
+.df-frame[data-orientation="landscape"] .df-notch--notch {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+/* Punch Hole → left side in landscape */
+.df-frame[data-orientation="landscape"] .df-notch--punch-hole {
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+}
+
+/* Home indicator → right side, vertical in landscape */
+.df-frame[data-orientation="landscape"] .df-home-indicator {
+  bottom: auto;
+  left: auto;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+/* Power button → top in landscape */
+.df-frame[data-orientation="landscape"] .df-btn-power {
+  right: auto;
+  top: -3px;
+  left: 180px;
+  width: 64px;
+  height: 3px;
+  border-radius: 2px 2px 0 0;
+}
+
+/* Volume up → bottom-left in landscape */
+.df-frame[data-orientation="landscape"] .df-btn-volume-up {
+  left: auto;
+  top: auto;
+  bottom: -3px;
+  right: 210px;
+  width: 36px;
+  height: 3px;
+  border-radius: 0 0 2px 2px;
+}
+
+/* Volume down → bottom-right in landscape */
+.df-frame[data-orientation="landscape"] .df-btn-volume-down {
+  left: auto;
+  top: auto;
+  bottom: -3px;
+  right: 160px;
+  width: 36px;
+  height: 3px;
+  border-radius: 0 0 2px 2px;
+}
+
+/* --- Safe zone padding: landscape --- */
+.df-frame[data-orientation="landscape"][data-device="iphone-16-pro-max"] > .df-screen { padding: 0 34px 0 59px; }
+.df-frame[data-orientation="landscape"][data-device="iphone-16-pro"]     > .df-screen { padding: 0 34px 0 59px; }
+.df-frame[data-orientation="landscape"][data-device="iphone-16"]         > .df-screen { padding: 0 34px 0 50px; }
+.df-frame[data-orientation="landscape"][data-device="iphone-se"]         > .df-screen { padding: 0 0 0 20px; }
+.df-frame[data-orientation="landscape"][data-device="galaxy-s24-ultra"]  > .df-screen { padding: 0 34px 0 36px; }
+.df-frame[data-orientation="landscape"][data-device="galaxy-s24"]        > .df-screen { padding: 0 34px 0 36px; }
+.df-frame[data-orientation="landscape"][data-device="pixel-9-pro"]       > .df-screen { padding: 0 34px 0 36px; }
+.df-frame[data-orientation="landscape"][data-device="pixel-9"]           > .df-screen { padding: 0 34px 0 36px; }
 
 /* ==========================================================================
    Navigation — Desktop Sidebar
@@ -400,6 +499,12 @@ body.df-has-nav {
     height: -webkit-fill-available;
     border-radius: 0 !important;
     box-shadow: none;
+    transition: none;
+  }
+
+  .df-frame[data-orientation="landscape"] {
+    width: 100% !important;
+    height: 100dvh !important;
   }
 
   .df-notch--dynamic-island,

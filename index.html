@@ -176,10 +176,10 @@
     /* Grid demo */
     .demo-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
       gap: 32px;
       padding: 0 24px 48px;
-      max-width: 1600px;
+      max-width: 1800px;
       margin: 0 auto;
     }
 
@@ -229,7 +229,7 @@
     <p>Wrap HTML prototypes in realistic device frames with navigation, responsive behavior, and safe areas. No build step required.</p>
   </div>
 
-  <!-- Device Picker + URL Input -->
+  <!-- Device Picker + Orientation + URL Input -->
   <div class="demo-controls">
     <label for="device-picker">Device:</label>
     <select id="device-picker">
@@ -242,6 +242,11 @@
       <option value="pixel-9-pro">Pixel 9 Pro</option>
       <option value="pixel-9">Pixel 9</option>
     </select>
+
+    <button id="orientation-btn" style="padding:8px 16px;border-radius:8px;border:1px solid #E0E0E0;background:#fff;color:#424242;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" title="Toggle orientation">
+      <svg id="orientation-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+      <span id="orientation-label">Portrait</span>
+    </button>
   </div>
 
   <div class="demo-controls">
@@ -345,19 +350,89 @@
       updateDeviceInfo(deviceId);
     });
 
+    /* --- Orientation toggle --- */
+    const orientationBtn = document.getElementById('orientation-btn');
+    const orientationIcon = document.getElementById('orientation-icon');
+    const orientationLabel = document.getElementById('orientation-label');
+
+    const portraitSvg = '<rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/>';
+    const landscapeSvg = '<rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><line x1="18" y1="12" x2="18" y2="12"/>';
+
+    orientationBtn.addEventListener('click', function () {
+      if (!window.deviceFrame) return;
+      const newOrientation = window.deviceFrame.toggleOrientation();
+      orientationLabel.textContent = newOrientation === 'landscape' ? 'Landscape' : 'Portrait';
+      orientationIcon.innerHTML = newOrientation === 'landscape' ? landscapeSvg : portraitSvg;
+
+      /* Toggle all-devices grid orientation too */
+      const gridFrames = document.querySelectorAll('#all-devices-grid .df-frame');
+      gridFrames.forEach(function (gridFrame) {
+        if (newOrientation === 'landscape') {
+          gridFrame.setAttribute('data-orientation', 'landscape');
+        } else {
+          gridFrame.removeAttribute('data-orientation');
+        }
+      });
+    });
+
     /* --- URL input --- */
     const urlInput = document.getElementById('url-input');
     const urlLoadBtn = document.getElementById('url-load-btn');
     const urlClearBtn = document.getElementById('url-clear-btn');
+    let gridIframes = [];
 
     function loadUrlInFrame() {
       const url = urlInput.value.trim();
       if (!url) return;
       const normalizedUrl = url.match(/^https?:\/\//) ? url : 'https://' + url;
       urlInput.value = normalizedUrl;
+
       if (window.deviceFrame) {
         window.deviceFrame.loadUrl(normalizedUrl);
       }
+
+      loadUrlToAllDevices(normalizedUrl);
+    }
+
+    function loadUrlToAllDevices(url) {
+      clearGridIframes();
+
+      const gridScreens = document.querySelectorAll('#all-devices-grid .df-screen');
+      gridScreens.forEach(function (gridScreen) {
+        const existingContent = gridScreen.querySelector('.grid-original-content');
+        if (!existingContent) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'grid-original-content';
+          wrapper.style.display = 'none';
+          while (gridScreen.firstChild) {
+            wrapper.appendChild(gridScreen.firstChild);
+          }
+          gridScreen.appendChild(wrapper);
+        } else {
+          existingContent.style.display = 'none';
+        }
+
+        const iframe = document.createElement('iframe');
+        iframe.className = 'df-iframe';
+        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+        iframe.setAttribute('loading', 'lazy');
+        iframe.src = url;
+        gridScreen.appendChild(iframe);
+        gridIframes.push(iframe);
+      });
+    }
+
+    function clearGridIframes() {
+      gridIframes.forEach(function (iframe) { iframe.remove(); });
+      gridIframes = [];
+
+      const gridScreens = document.querySelectorAll('#all-devices-grid .df-screen');
+      gridScreens.forEach(function (gridScreen) {
+        const original = gridScreen.querySelector('.grid-original-content');
+        if (original) {
+          original.style.display = '';
+        }
+      });
     }
 
     urlLoadBtn.addEventListener('click', loadUrlInFrame);
@@ -367,6 +442,7 @@
 
     urlClearBtn.addEventListener('click', function () {
       urlInput.value = '';
+      clearGridIframes();
       if (window.deviceFrame) {
         window.deviceFrame.loadUrl('');
         window.location.reload();
