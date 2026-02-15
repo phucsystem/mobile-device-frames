@@ -42,6 +42,16 @@
   position: relative;
 }
 
+/* --- Safe zone padding: push content below notch and above home indicator --- */
+.df-frame[data-device="iphone-16-pro-max"] > .df-screen { padding-top: 59px; padding-bottom: 34px; }
+.df-frame[data-device="iphone-16-pro"]     > .df-screen { padding-top: 59px; padding-bottom: 34px; }
+.df-frame[data-device="iphone-16"]         > .df-screen { padding-top: 50px; padding-bottom: 34px; }
+.df-frame[data-device="iphone-se"]         > .df-screen { padding-top: 20px; padding-bottom: 0; }
+.df-frame[data-device="galaxy-s24-ultra"]  > .df-screen { padding-top: 36px; padding-bottom: 34px; }
+.df-frame[data-device="galaxy-s24"]        > .df-screen { padding-top: 36px; padding-bottom: 34px; }
+.df-frame[data-device="pixel-9-pro"]       > .df-screen { padding-top: 36px; padding-bottom: 34px; }
+.df-frame[data-device="pixel-9"]           > .df-screen { padding-top: 36px; padding-bottom: 34px; }
+
 /* --- Iframe: embedded URL content --- */
 .df-iframe {
   width: 100%;
