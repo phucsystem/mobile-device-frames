@@ -191,6 +191,14 @@
       text-align: center;
     }
 
+    .demo-grid-item .df-frame {
+      transition: width 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+                  height 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+                  transform 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+                  margin-bottom 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+      transform-origin: top center;
+    }
+
     .demo-grid-item-label {
       margin-top: 12px;
       font-size: 13px;
@@ -350,6 +358,33 @@
       updateDeviceInfo(deviceId);
     });
 
+    /* --- Scale grid frames for landscape --- */
+    function scaleGridFrames(orientation) {
+      const gridFrames = document.querySelectorAll('#all-devices-grid .df-frame');
+      const maxGridWidth = 430;
+
+      gridFrames.forEach(function (gridFrame) {
+        const deviceId = gridFrame.getAttribute('data-device');
+        const spec = devices[deviceId];
+        if (!spec) return;
+
+        if (orientation === 'landscape') {
+          gridFrame.setAttribute('data-orientation', 'landscape');
+          const landscapeWidth = spec.height;
+          const landscapeHeight = spec.width;
+          if (landscapeWidth > maxGridWidth) {
+            const scaleFactor = maxGridWidth / landscapeWidth;
+            gridFrame.style.transform = 'scale(' + scaleFactor + ')';
+            gridFrame.style.marginBottom = '-' + (landscapeHeight * (1 - scaleFactor)) + 'px';
+          }
+        } else {
+          gridFrame.removeAttribute('data-orientation');
+          gridFrame.style.transform = '';
+          gridFrame.style.marginBottom = '';
+        }
+      });
+    }
+
     /* --- Orientation toggle --- */
     const orientationBtn = document.getElementById('orientation-btn');
     const orientationIcon = document.getElementById('orientation-icon');
@@ -365,14 +400,7 @@
       orientationIcon.innerHTML = newOrientation === 'landscape' ? landscapeSvg : portraitSvg;
 
       /* Toggle all-devices grid orientation too */
-      const gridFrames = document.querySelectorAll('#all-devices-grid .df-frame');
-      gridFrames.forEach(function (gridFrame) {
-        if (newOrientation === 'landscape') {
-          gridFrame.setAttribute('data-orientation', 'landscape');
-        } else {
-          gridFrame.removeAttribute('data-orientation');
-        }
-      });
+      scaleGridFrames(newOrientation);
     });
 
     /* --- URL input --- */
