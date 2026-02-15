@@ -27,6 +27,7 @@ class DeviceFrame {
     this.accentColor = this.config.accentColor || '#1976D2';
     this.targetEl = null;
     this.iframeEl = null;
+    this._savedContent = null;
     this.navOpen = true;
   }
 
@@ -131,19 +132,24 @@ class DeviceFrame {
     if (!this.screenEl) return;
     this.url = url;
 
-    const oldIframe = this.screenEl.querySelector('.df-iframe');
-    const oldLoading = this.screenEl.querySelector('.df-iframe-loading');
-    const oldError = this.screenEl.querySelector('.df-iframe-error');
-    if (oldIframe) oldIframe.remove();
-    if (oldLoading) oldLoading.remove();
-    if (oldError) oldError.remove();
-
-    if (!url) {
+    if (url) {
+      if (!this._savedContent) {
+        this._savedContent = document.createDocumentFragment();
+        while (this.screenEl.firstChild) {
+          this._savedContent.appendChild(this.screenEl.firstChild);
+        }
+      } else {
+        this.screenEl.innerHTML = '';
+      }
+      this._renderIframe(this.screenEl, url);
+    } else {
+      this.screenEl.innerHTML = '';
       this.iframeEl = null;
-      return;
+      if (this._savedContent) {
+        this.screenEl.appendChild(this._savedContent);
+        this._savedContent = null;
+      }
     }
-
-    this._renderIframe(this.screenEl, url);
   }
 
   renderNotch() {
