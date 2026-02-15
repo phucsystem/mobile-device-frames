@@ -7,6 +7,7 @@ Wrap HTML prototypes in realistic device frames with navigation, responsive beha
 ## Features
 
 - 8 device frames (iPhone, Galaxy, Pixel) with accurate dimensions
+- Portrait & landscape orientation with smooth animated transition
 - Dynamic Island, Notch, and Punch Hole overlays
 - Desktop sidebar + mobile FAB bottom sheet navigation
 - Responsive: fullscreen on mobile, framed on desktop
@@ -97,6 +98,40 @@ window.deviceFrame.loadUrl('');  // clear iframe, restore content
 
 > **Note:** Some sites block iframe embedding via `X-Frame-Options` or `Content-Security-Policy`. An error message is shown when this happens.
 
+## Orientation
+
+Default is portrait. Set landscape via attribute or config:
+
+```html
+<!-- Via attribute -->
+<div data-device="iphone-16-pro" data-orientation="landscape"></div>
+
+<!-- Via config -->
+<script>
+window.DeviceFrameConfig = {
+  device: 'iphone-16-pro',
+  orientation: 'landscape',
+};
+</script>
+<div data-device="auto"></div>
+```
+
+Toggle at runtime:
+
+```js
+window.deviceFrame.setOrientation('landscape');
+window.deviceFrame.setOrientation('portrait');
+window.deviceFrame.toggleOrientation(); // returns new orientation
+```
+
+In landscape mode:
+- Width and height are swapped
+- Notch/Dynamic Island moves to the left edge
+- Home indicator moves to the right edge
+- Hardware buttons reposition to top/bottom
+- Safe zone padding rotates accordingly
+- Smooth CSS transition animates the change
+
 ## Safe Area Utilities
 
 CSS classes for `env(safe-area-inset-*)`:
@@ -139,6 +174,10 @@ window.deviceFrame
 // Switch device at runtime
 window.deviceFrame.switchDevice('galaxy-s24-ultra');
 
+// Orientation
+window.deviceFrame.setOrientation('landscape');
+window.deviceFrame.toggleOrientation();
+
 // Load a URL in iframe
 window.deviceFrame.loadUrl('https://example.com');
 
@@ -151,6 +190,7 @@ const devices = DeviceFrame.getDevices();
 // Manual initialization
 const frame = new DeviceFrame({
   device: 'pixel-9-pro',
+  orientation: 'landscape',    // optional: default 'portrait'
   url: 'https://example.com',  // optional: load URL in iframe
   title: 'My Proto',
   screens: [...]
