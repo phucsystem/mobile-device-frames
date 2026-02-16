@@ -768,6 +768,15 @@
 
       frame.appendChild(createGridStatusBar(deviceId));
 
+      const scrollDots = document.createElement('div');
+      scrollDots.className = 'df-scroll-indicator df-scroll-visible';
+      for (let dotIdx = 0; dotIdx < 5; dotIdx++) {
+        const dot = document.createElement('div');
+        dot.className = 'df-scroll-dot' + (dotIdx === 1 ? ' active' : '');
+        scrollDots.appendChild(dot);
+      }
+      screen.appendChild(scrollDots);
+
       item.appendChild(frame);
 
       const label = document.createElement('div');
