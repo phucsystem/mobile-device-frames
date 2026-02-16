@@ -7,78 +7,247 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="frame.css">
   <style>
+    /* --- Theme tokens --- */
+    :root {
+      --d-bg: #E8ECF0;
+      --d-panel: #fff;
+      --d-input: #F5F5F7;
+      --d-border: #E0E0E0;
+      --d-divider: #EEEEEE;
+      --d-text: #1D1D1F;
+      --d-text-2: #6E6E73;
+      --d-text-3: #AEAEB2;
+      --d-chip: #F5F5F7;
+      --d-chip-text: #6E6E73;
+      --d-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 24px rgba(0,0,0,0.06);
+      --d-accent: #1976D2;
+      --d-hover: #F0F0F2;
+    }
+
+    body.demo-dark {
+      --d-bg: #1a1a2e;
+      --d-panel: #222236;
+      --d-input: #2a2a42;
+      --d-border: #3a3a52;
+      --d-divider: #3a3a52;
+      --d-text: #E5E5EA;
+      --d-text-2: #98989D;
+      --d-text-3: #636366;
+      --d-chip: #2a2a42;
+      --d-chip-text: #98989D;
+      --d-shadow: 0 1px 3px rgba(0,0,0,0.15), 0 6px 24px rgba(0,0,0,0.2);
+      --d-hover: #32324a;
+    }
+
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
-      background: #E8ECF0;
-      color: #212121;
+      background: var(--d-bg);
+      color: var(--d-text);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
+    /* --- Header --- */
     .demo-header {
       text-align: center;
-      padding: 48px 24px 32px;
+      padding: 48px 24px 28px;
     }
 
     .demo-header h1 {
       font-size: 32px;
       font-weight: 700;
       margin-bottom: 8px;
+      color: var(--d-text);
     }
 
     .demo-header p {
       font-size: 16px;
-      color: #757575;
+      color: var(--d-text-2);
       max-width: 600px;
       margin: 0 auto;
     }
 
-    .demo-controls {
+    /* --- Toolbar card --- */
+    .demo-toolbar {
+      max-width: 720px;
+      margin: 0 auto 28px;
+      padding: 16px 20px;
+      background: var(--d-panel);
+      border-radius: 16px;
+      box-shadow: var(--d-shadow);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .demo-toolbar-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 0 24px 32px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .demo-controls label {
-      font-size: 14px;
-      font-weight: 600;
-      color: #424242;
+    .demo-toolbar-row + .demo-toolbar-row {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--d-divider);
     }
 
-    .demo-controls select {
-      padding: 8px 16px;
+    .demo-toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .demo-toolbar-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--d-text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .demo-toolbar-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--d-divider);
+      flex-shrink: 0;
+    }
+
+    .demo-toolbar-spacer { flex: 1; }
+
+    /* --- Shared form elements --- */
+    .demo-select {
+      padding: 6px 28px 6px 10px;
       border-radius: 8px;
-      border: 1px solid #E0E0E0;
-      background: #fff;
-      font-size: 14px;
+      border: 1px solid var(--d-border);
+      background: var(--d-input);
+      font-size: 13px;
       font-weight: 500;
-      color: #212121;
+      color: var(--d-text);
       cursor: pointer;
       outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239E9E9E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
     }
 
-    .demo-controls select:focus {
-      border-color: #1976D2;
-      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+    .demo-select:focus {
+      border-color: var(--d-accent);
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
     }
 
-    .demo-device-info {
-      text-align: center;
-      padding: 0 24px 24px;
+    .demo-input {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--d-border);
+      background: var(--d-input);
       font-size: 13px;
-      color: #757575;
+      font-weight: 500;
+      color: var(--d-text);
+      outline: none;
+      flex: 1;
+      min-width: 180px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
     }
 
-    .demo-device-info span {
-      display: inline-block;
-      background: #fff;
-      padding: 4px 12px;
-      border-radius: 6px;
-      margin: 0 4px;
+    .demo-input:focus {
+      border-color: var(--d-accent);
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+    }
+
+    .demo-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--d-border);
+      background: var(--d-input);
+      font-size: 13px;
       font-weight: 500;
-      color: #424242;
+      color: var(--d-text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .demo-btn:hover { background: var(--d-hover); }
+
+    .demo-btn--primary {
+      background: var(--d-accent);
+      border-color: var(--d-accent);
+      color: #fff;
+    }
+
+    .demo-btn--primary:hover { background: #1565C0; }
+
+    /* --- Toggle switch --- */
+    .demo-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--d-text);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .demo-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+
+    .demo-toggle-track {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      background: var(--d-border);
+      border-radius: 10px;
+      flex-shrink: 0;
+      transition: background-color 0.2s ease;
+    }
+
+    .demo-toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: transform 0.2s ease;
+    }
+
+    .demo-toggle input:checked + .demo-toggle-track {
+      background: var(--d-accent);
+    }
+
+    .demo-toggle input:checked + .demo-toggle-track::after {
+      transform: translateX(16px);
+    }
+
+    /* --- Device specs chips --- */
+    .demo-specs {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .demo-specs span {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--d-chip-text);
+      background: var(--d-chip);
+      padding: 3px 10px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* Override stage for demo — no min-height */
@@ -203,12 +372,12 @@
       margin-top: 12px;
       font-size: 13px;
       font-weight: 600;
-      color: #424242;
+      color: var(--d-text);
     }
 
     .demo-grid-item-specs {
       font-size: 11px;
-      color: #9E9E9E;
+      color: var(--d-text-3);
       margin-top: 4px;
     }
 
@@ -217,15 +386,22 @@
       font-size: 22px;
       font-weight: 700;
       padding: 48px 24px 24px;
-      color: #212121;
+      color: var(--d-text);
     }
 
     .demo-section-subtitle {
       text-align: center;
       font-size: 14px;
-      color: #757575;
+      color: var(--d-text-2);
       margin-top: -16px;
       margin-bottom: 32px;
+    }
+
+    /* --- Toolbar responsive --- */
+    @media (max-width: 600px) {
+      .demo-toolbar { margin: 0 12px 20px; padding: 12px 14px; }
+      .demo-toolbar-divider { display: none; }
+      .demo-toolbar-row { gap: 8px; }
     }
   </style>
 </head>
@@ -237,39 +413,73 @@
     <p>Wrap HTML prototypes in realistic device frames with navigation, responsive behavior, and safe areas. No build step required.</p>
   </div>
 
-  <!-- Device Picker + Orientation + URL Input -->
-  <div class="demo-controls">
-    <label for="device-picker">Device:</label>
-    <select id="device-picker">
-      <option value="iphone-16-pro-max">iPhone 16 Pro Max</option>
-      <option value="iphone-16-pro" selected>iPhone 16 Pro</option>
-      <option value="iphone-16">iPhone 16</option>
-      <option value="iphone-se">iPhone SE 3rd</option>
-      <option value="galaxy-s24-ultra">Galaxy S24 Ultra</option>
-      <option value="galaxy-s24">Galaxy S24</option>
-      <option value="pixel-9-pro">Pixel 9 Pro</option>
-      <option value="pixel-9">Pixel 9</option>
-    </select>
+  <!-- Toolbar -->
+  <div class="demo-toolbar">
+    <!-- Row 1: Device + Appearance -->
+    <div class="demo-toolbar-row">
+      <div class="demo-toolbar-group">
+        <span class="demo-toolbar-label">Device</span>
+        <select id="device-picker" class="demo-select">
+          <option value="iphone-16-pro-max">iPhone 16 Pro Max</option>
+          <option value="iphone-16-pro" selected>iPhone 16 Pro</option>
+          <option value="iphone-16">iPhone 16</option>
+          <option value="iphone-se">iPhone SE 3rd</option>
+          <option value="galaxy-s24-ultra">Galaxy S24 Ultra</option>
+          <option value="galaxy-s24">Galaxy S24</option>
+          <option value="pixel-9-pro">Pixel 9 Pro</option>
+          <option value="pixel-9">Pixel 9</option>
+        </select>
+      </div>
 
-    <button id="orientation-btn" style="padding:8px 16px;border-radius:8px;border:1px solid #E0E0E0;background:#fff;color:#424242;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;" title="Toggle orientation">
-      <svg id="orientation-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
-      <span id="orientation-label">Portrait</span>
-    </button>
-  </div>
+      <button id="orientation-btn" class="demo-btn" title="Toggle orientation">
+        <svg id="orientation-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+        <span id="orientation-label">Portrait</span>
+      </button>
 
-  <div class="demo-controls">
-    <label for="url-input">URL:</label>
-    <input type="url" id="url-input" placeholder="https://example.com" style="padding:8px 16px;border-radius:8px;border:1px solid #E0E0E0;background:#fff;font-size:14px;font-weight:500;color:#212121;outline:none;width:320px;" />
-    <button id="url-load-btn" style="padding:8px 20px;border-radius:8px;border:none;background:#1976D2;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">Load</button>
-    <button id="url-clear-btn" style="padding:8px 16px;border-radius:8px;border:1px solid #E0E0E0;background:#fff;color:#424242;font-size:14px;font-weight:500;cursor:pointer;">Clear</button>
-  </div>
+      <div class="demo-toolbar-divider"></div>
 
-  <!-- Device Info -->
-  <div class="demo-device-info" id="device-info">
-    <span id="info-width">393px</span> &times;
-    <span id="info-height">852px</span>
-    <span id="info-radius">55px radius</span>
-    <span id="info-notch">Dynamic Island</span>
+      <div class="demo-toolbar-group">
+        <span class="demo-toolbar-label">Skin</span>
+        <select id="skin-picker" class="demo-select">
+          <option value="default">Default</option>
+          <option value="space-black">Space Black</option>
+          <option value="silver">Silver</option>
+          <option value="gold">Gold</option>
+        </select>
+      </div>
+
+      <div class="demo-toolbar-divider"></div>
+
+      <label class="demo-toggle">
+        <input type="checkbox" id="dark-mode-toggle">
+        <span class="demo-toggle-track"></span>
+        Dark
+      </label>
+
+      <label class="demo-toggle">
+        <input type="checkbox" id="status-bar-toggle" checked>
+        <span class="demo-toggle-track"></span>
+        Status Bar
+      </label>
+    </div>
+
+    <!-- Row 2: URL -->
+    <div class="demo-toolbar-row">
+      <div class="demo-toolbar-group" style="flex:1;">
+        <span class="demo-toolbar-label">URL</span>
+        <input type="url" id="url-input" class="demo-input" placeholder="https://example.com">
+      </div>
+      <button id="url-load-btn" class="demo-btn demo-btn--primary">Load</button>
+      <button id="url-clear-btn" class="demo-btn">Clear</button>
+    </div>
+
+    <!-- Device specs -->
+    <div class="demo-specs" id="device-info">
+      <span id="info-width">393px</span>
+      <span id="info-height">852px</span>
+      <span id="info-radius">55px radius</span>
+      <span id="info-notch">Dynamic Island</span>
+    </div>
   </div>
 
   <!-- Interactive Frame -->
@@ -477,6 +687,25 @@
       }
     });
 
+    /* --- Status bar SVGs (shared by grid builder + toggle) --- */
+    const signalSvg = '<svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="9" width="3" height="3" rx="0.5" fill="currentColor"/><rect x="4.5" y="6" width="3" height="6" rx="0.5" fill="currentColor"/><rect x="9" y="3" width="3" height="9" rx="0.5" fill="currentColor"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>';
+    const wifiSvg = '<svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 3.5C4 0.5 12 0.5 15 3.5"/><path d="M3.5 6.5C5.5 4.5 10.5 4.5 12.5 6.5"/><circle cx="8" cy="10" r="1" fill="currentColor" stroke="none"/></svg>';
+    const batterySvg = '<svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1"/><rect x="2.5" y="2.5" width="17" height="7" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 000-4z" fill="currentColor"/></svg>';
+
+    function createGridStatusBar(deviceId) {
+      const isIOS = deviceId.startsWith('iphone');
+      const variant = isIOS ? 'ios' : 'android';
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const bar = document.createElement('div');
+      bar.className = 'df-status-bar df-status-bar--' + variant;
+      bar.style.display = '';
+      bar.innerHTML = '<span class="df-status-bar-left"><span class="df-status-bar-time">' + timeStr + '</span></span>'
+        + '<span class="df-status-bar-right"><span class="df-status-bar-icons">' + signalSvg + wifiSvg + batterySvg + '</span></span>';
+      return bar;
+    }
+
     /* --- Build all-devices grid --- */
     const grid = document.getElementById('all-devices-grid');
     const devices = DeviceFrame.getDevices();
@@ -537,6 +766,8 @@
         frame.appendChild(indicator);
       }
 
+      frame.appendChild(createGridStatusBar(deviceId));
+
       item.appendChild(frame);
 
       const label = document.createElement('div');
@@ -550,6 +781,54 @@
       item.appendChild(specs);
 
       grid.appendChild(item);
+    });
+
+    /* --- Skin picker --- */
+    const skinPicker = document.getElementById('skin-picker');
+    skinPicker.addEventListener('change', function () {
+      const skinId = this.value;
+      if (window.deviceFrame) {
+        window.deviceFrame.setSkin(skinId);
+      }
+      document.querySelectorAll('#all-devices-grid .df-frame').forEach(function (gridFrame) {
+        if (skinId === 'default') {
+          gridFrame.removeAttribute('data-skin');
+        } else {
+          gridFrame.setAttribute('data-skin', skinId);
+        }
+      });
+    });
+
+    /* --- Dark mode toggle --- */
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    darkModeToggle.addEventListener('change', function () {
+      const isDark = this.checked;
+      document.body.classList.toggle('demo-dark', isDark);
+      if (window.deviceFrame) {
+        window.deviceFrame.setTheme(isDark ? 'dark' : 'light');
+      }
+    });
+
+    /* --- Status bar toggle --- */
+    const statusBarToggle = document.getElementById('status-bar-toggle');
+    statusBarToggle.addEventListener('change', function () {
+      const enabled = this.checked;
+      if (window.deviceFrame) {
+        window.deviceFrame.statusBarEnabled = enabled;
+        if (enabled) {
+          window.deviceFrame.renderStatusBar();
+        } else {
+          if (window.deviceFrame._statusBarInterval) {
+            clearInterval(window.deviceFrame._statusBarInterval);
+            window.deviceFrame._statusBarInterval = null;
+          }
+          const mainBar = window.deviceFrame.frameEl.querySelector('.df-status-bar');
+          if (mainBar) mainBar.remove();
+        }
+      }
+      document.querySelectorAll('#all-devices-grid .df-status-bar').forEach(function (bar) {
+        bar.style.display = enabled ? '' : 'none';
+      });
     });
   </script>
 </body>

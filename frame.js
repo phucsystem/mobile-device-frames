@@ -30,6 +30,10 @@ class DeviceFrame {
     this.iframeEl = null;
     this._savedContent = null;
     this.navOpen = true;
+    this.skin = this.config.skin || 'default';
+    this.theme = this.config.theme || 'light';
+    this.statusBarEnabled = this.config.statusBar !== false;
+    this._statusBarInterval = null;
   }
 
   init() {
@@ -62,6 +66,11 @@ class DeviceFrame {
 
     this.setupAnimations();
     this.setupResponsive();
+
+    if (this.statusBarEnabled) {
+      this.renderStatusBar();
+    }
+    this.setupScrollIndicator();
   }
 
   wrapContent() {
@@ -73,6 +82,12 @@ class DeviceFrame {
     frame.setAttribute('data-device', this.device);
     if (this.orientation === 'landscape') {
       frame.setAttribute('data-orientation', 'landscape');
+    }
+    if (this.skin !== 'default') {
+      frame.setAttribute('data-skin', this.skin);
+    }
+    if (this.theme === 'dark') {
+      stage.setAttribute('data-theme', 'dark');
     }
 
     const screen = document.createElement('div');
@@ -356,6 +371,9 @@ class DeviceFrame {
     } else {
       this.frameEl.removeAttribute('data-orientation');
     }
+    if (this.statusBarEnabled) {
+      this.renderStatusBar();
+    }
   }
 
   toggleOrientation() {
@@ -374,6 +392,12 @@ class DeviceFrame {
     const oldIndicator = this.frameEl.querySelector('.df-home-indicator');
     if (oldIndicator) oldIndicator.remove();
 
+    const oldStatusBar = this.frameEl.querySelector('.df-status-bar');
+    if (oldStatusBar) oldStatusBar.remove();
+
+    const oldScrollIndicator = this.frameEl.querySelector('.df-scroll-indicator');
+    if (oldScrollIndicator) oldScrollIndicator.remove();
+
     const oldPower = this.frameEl.querySelector('.df-btn-power');
     if (oldPower) oldPower.remove();
     const oldVolUp = this.frameEl.querySelector('.df-btn-volume-up');
@@ -384,6 +408,130 @@ class DeviceFrame {
     this.renderNotch();
     this.renderHomeIndicator();
     this.renderButtons();
+
+    if (this.statusBarEnabled) {
+      this.renderStatusBar();
+    }
+  }
+
+  setSkin(skinId) {
+    this.skin = skinId;
+    if (!this.frameEl) return;
+    if (skinId === 'default') {
+      this.frameEl.removeAttribute('data-skin');
+    } else {
+      this.frameEl.setAttribute('data-skin', skinId);
+    }
+  }
+
+  setTheme(theme) {
+    this.theme = theme;
+    if (!this.stageEl) return;
+    if (theme === 'dark') {
+      this.stageEl.setAttribute('data-theme', 'dark');
+    } else {
+      this.stageEl.removeAttribute('data-theme');
+    }
+  }
+
+  renderStatusBar() {
+    if (this._statusBarInterval) {
+      clearInterval(this._statusBarInterval);
+      this._statusBarInterval = null;
+    }
+    const existing = this.frameEl ? this.frameEl.querySelector('.df-status-bar') : null;
+    if (existing) existing.remove();
+
+    if (!this.statusBarEnabled || !this.frameEl) return;
+
+    const spec = DEVICES[this.device];
+    if (!spec) return;
+
+    const isIOS = this.device.startsWith('iphone');
+    const variant = isIOS ? 'ios' : 'android';
+
+    const bar = document.createElement('div');
+    bar.className = `df-status-bar df-status-bar--${variant}`;
+
+    const signalSvg = '<svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="9" width="3" height="3" rx="0.5" fill="currentColor"/><rect x="4.5" y="6" width="3" height="6" rx="0.5" fill="currentColor"/><rect x="9" y="3" width="3" height="9" rx="0.5" fill="currentColor"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>';
+    const wifiSvg = '<svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 3.5C4 0.5 12 0.5 15 3.5"/><path d="M3.5 6.5C5.5 4.5 10.5 4.5 12.5 6.5"/><circle cx="8" cy="10" r="1" fill="currentColor" stroke="none"/></svg>';
+    const batterySvg = '<svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1"/><rect x="2.5" y="2.5" width="17" height="7" rx="1.5" fill="currentColor"/><path d="M23 4v4a2 2 0 000-4z" fill="currentColor"/></svg>';
+
+    const timeEl = document.createElement('span');
+    timeEl.className = 'df-status-bar-time';
+
+    const iconsEl = document.createElement('span');
+    iconsEl.className = 'df-status-bar-icons';
+    iconsEl.innerHTML = signalSvg + wifiSvg + batterySvg;
+
+    const leftGroup = document.createElement('span');
+    leftGroup.className = 'df-status-bar-left';
+    leftGroup.appendChild(timeEl);
+
+    const rightGroup = document.createElement('span');
+    rightGroup.className = 'df-status-bar-right';
+    rightGroup.appendChild(iconsEl);
+
+    bar.appendChild(leftGroup);
+    bar.appendChild(rightGroup);
+
+    const updateTime = () => {
+      const now = new Date();
+      timeEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+    updateTime();
+    this._statusBarInterval = setInterval(updateTime, 60000);
+
+    this.frameEl.appendChild(bar);
+  }
+
+  setupScrollIndicator() {
+    if (!this.screenEl) return;
+
+    const existing = this.screenEl.querySelector('.df-scroll-indicator');
+    if (existing) existing.remove();
+
+    requestAnimationFrame(() => {
+      const scrollable = this.screenEl.querySelector('.sample-content')
+        || Array.from(this.screenEl.querySelectorAll('*')).find(
+          child => child.scrollHeight > child.clientHeight + 10
+            && getComputedStyle(child).overflowY !== 'hidden'
+        );
+
+      if (!scrollable || scrollable.scrollHeight <= scrollable.clientHeight) return;
+
+      const indicator = document.createElement('div');
+      indicator.className = 'df-scroll-indicator';
+
+      const dotCount = 5;
+      for (let dotIndex = 0; dotIndex < dotCount; dotIndex++) {
+        const dot = document.createElement('div');
+        dot.className = 'df-scroll-dot';
+        if (dotIndex === 0) dot.classList.add('active');
+        indicator.appendChild(dot);
+      }
+
+      this.screenEl.appendChild(indicator);
+
+      let hideTimeout = null;
+
+      scrollable.addEventListener('scroll', () => {
+        const maxScroll = scrollable.scrollHeight - scrollable.clientHeight;
+        if (maxScroll <= 0) return;
+        const scrollRatio = scrollable.scrollTop / maxScroll;
+        const activeIndex = Math.min(Math.floor(scrollRatio * dotCount), dotCount - 1);
+
+        indicator.querySelectorAll('.df-scroll-dot').forEach((dot, dotIdx) => {
+          dot.classList.toggle('active', dotIdx === activeIndex);
+        });
+
+        indicator.classList.add('df-scroll-visible');
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+          indicator.classList.remove('df-scroll-visible');
+        }, 1500);
+      }, { passive: true });
+    });
   }
 
   static getDevices() {

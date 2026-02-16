@@ -18,6 +18,7 @@
   min-height: 100vh;
   padding: 24px;
   background: #E8ECF0;
+  transition: background-color 0.3s ease;
 }
 
 /* --- Frame: device shell --- */
@@ -155,7 +156,8 @@
 /* --- Orientation transition --- */
 .df-frame {
   transition: width 0.4s cubic-bezier(0.32, 0.72, 0, 1),
-              height 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+              height 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+              background-color 0.3s ease;
 }
 
 /* --- Notch: Dynamic Island (iPhone 16 Pro/Max) — portrait --- */
@@ -479,6 +481,144 @@ body.df-has-nav {
 }
 
 /* ==========================================================================
+   Device Color Skins
+   ========================================================================== */
+
+.df-frame[data-skin="space-black"] { background: #1a1a1a; }
+.df-frame[data-skin="space-black"] .df-btn-power,
+.df-frame[data-skin="space-black"] .df-btn-volume-up,
+.df-frame[data-skin="space-black"] .df-btn-volume-down { background: #333; }
+.df-frame[data-skin="space-black"] .df-home-indicator { background: rgba(255,255,255,0.25); }
+.df-frame[data-skin="space-black"] .df-status-bar { color: #fff; }
+
+.df-frame[data-skin="silver"] { background: #E8E8E8; }
+.df-frame[data-skin="silver"] .df-btn-power,
+.df-frame[data-skin="silver"] .df-btn-volume-up,
+.df-frame[data-skin="silver"] .df-btn-volume-down { background: #c0c0c0; }
+.df-frame[data-skin="silver"] .df-home-indicator { background: rgba(0,0,0,0.15); }
+
+.df-frame[data-skin="gold"] { background: #F9E5C7; }
+.df-frame[data-skin="gold"] .df-btn-power,
+.df-frame[data-skin="gold"] .df-btn-volume-up,
+.df-frame[data-skin="gold"] .df-btn-volume-down { background: #d4a76a; }
+.df-frame[data-skin="gold"] .df-home-indicator { background: rgba(139,90,43,0.25); }
+
+/* ==========================================================================
+   Dark Mode
+   ========================================================================== */
+
+.df-stage[data-theme="dark"] { background: #1a1a2e; }
+.df-stage[data-theme="dark"] .df-frame {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 20px 60px rgba(0,0,0,0.4),
+    0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* ==========================================================================
+   Status Bar
+   ========================================================================== */
+
+.df-status-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 45;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+/* Per-device status bar sizing */
+.df-frame[data-device="iphone-16-pro-max"] > .df-status-bar,
+.df-frame[data-device="iphone-16-pro"]     > .df-status-bar { height: 59px; padding: 16px 28px 0; }
+.df-frame[data-device="iphone-16"]         > .df-status-bar { height: 50px; padding: 14px 24px 0; }
+.df-frame[data-device="iphone-se"]         > .df-status-bar { height: 20px; padding: 2px 12px 0; font-size: 12px; }
+.df-frame[data-device="galaxy-s24-ultra"]  > .df-status-bar,
+.df-frame[data-device="galaxy-s24"]        > .df-status-bar,
+.df-frame[data-device="pixel-9-pro"]       > .df-status-bar,
+.df-frame[data-device="pixel-9"]           > .df-status-bar { height: 36px; padding: 8px 16px 0; }
+
+.df-status-bar-left,
+.df-status-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.df-status-bar-time { font-size: 15px; font-weight: 600; }
+.df-status-bar-icons { display: flex; align-items: center; gap: 5px; }
+.df-status-bar-icons svg { display: block; }
+
+/* Status bar landscape — left edge, vertical */
+.df-frame[data-orientation="landscape"] > .df-status-bar {
+  top: 0;
+  left: 0;
+  right: auto;
+  bottom: 0;
+  width: 54px;
+  height: auto;
+  flex-direction: column;
+  padding: 24px 0;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.df-frame[data-orientation="landscape"] > .df-status-bar .df-status-bar-left,
+.df-frame[data-orientation="landscape"] > .df-status-bar .df-status-bar-right { flex-direction: column; }
+.df-frame[data-orientation="landscape"] > .df-status-bar .df-status-bar-icons { flex-direction: column; }
+.df-frame[data-orientation="landscape"] > .df-status-bar .df-status-bar-time { writing-mode: vertical-rl; font-size: 13px; }
+
+/* ==========================================================================
+   Scroll Indicators
+   ========================================================================== */
+
+.df-scroll-indicator {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.df-scroll-indicator.df-scroll-visible { opacity: 1; }
+
+.df-scroll-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.df-scroll-dot.active {
+  transform: scale(1.5);
+  background: rgba(0,0,0,0.5);
+}
+
+/* Scroll indicator landscape — bottom edge, horizontal */
+.df-frame[data-orientation="landscape"] .df-scroll-indicator {
+  right: auto;
+  top: auto;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: row;
+}
+
+/* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
 
@@ -513,7 +653,9 @@ body.df-has-nav {
   .df-home-indicator,
   .df-btn-power,
   .df-btn-volume-up,
-  .df-btn-volume-down {
+  .df-btn-volume-down,
+  .df-status-bar,
+  .df-scroll-indicator {
     display: none;
   }
 
