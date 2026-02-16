@@ -96,7 +96,7 @@ window.deviceFrame.loadUrl('https://example.com');
 window.deviceFrame.loadUrl('');  // clear iframe, restore content
 ```
 
-> **Note:** Some sites block iframe embedding via `X-Frame-Options` or `Content-Security-Policy`. An error message is shown when this happens.
+> **Note:** Some sites block iframe embedding via `X-Frame-Options` or `Content-Security-Policy`. An error message is shown when this happens. To bypass this during development, install the [Ignore X-Frame headers](https://chromewebstore.google.com/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe) Chrome extension — enable it only while testing, then disable it for normal browsing.
 
 ## Orientation
 
